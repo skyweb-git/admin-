@@ -221,8 +221,17 @@ export async function uploadMediaToAPI(mediaPayload) {
       return { success: false, message: 'Key and file data are required' };
     }
 
-    const type = resourceType || (typeof file === 'string' && file.startsWith('data:video') ? 'video' : 'image');
-    const targetFolder = folder || (type === 'video' ? 'maytri_ambhuja/videos' : 'maytri_ambhuja/gallery');
+    const type = resourceType || (
+      (typeof file === 'string' && file.startsWith('data:video')) ? 'video' :
+      (typeof file === 'string' && file.startsWith('data:application/pdf')) ? 'raw' :
+      (file?.type && file.type.includes('pdf')) ? 'raw' :
+      'image'
+    );
+    const targetFolder = folder || (
+      type === 'video' ? 'maytri_ambhuja/videos' :
+      type === 'raw' ? 'maytri_ambhuja/documents' :
+      'maytri_ambhuja/gallery'
+    );
 
     // Convert base64 data URL to a Blob for FormData upload
     let fileBlob;
@@ -283,6 +292,23 @@ export async function uploadMediaToAPI(mediaPayload) {
     return result;
   } catch (err) {
     console.error('Media upload error:', err.message);
+    return { success: false, message: err.message };
+  }
+}
+
+export async function deleteMediaFromAPI(key) {
+  try {
+    const baseUrl = getApiBaseUrl();
+    const res = await fetch(`${baseUrl}/media/${encodeURIComponent(key)}`, {
+      method: 'DELETE',
+    });
+    const result = await res.json();
+    if (broadcastChannel && result.success) {
+      broadcastChannel.postMessage({ type: 'MEDIA_UPDATED', key, deleted: true });
+    }
+    return result;
+  } catch (err) {
+    console.error('Delete media error:', err.message);
     return { success: false, message: err.message };
   }
 }
