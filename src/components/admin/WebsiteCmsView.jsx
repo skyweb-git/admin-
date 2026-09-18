@@ -1331,7 +1331,7 @@ export default function WebsiteCmsView() {
 
                   {/* Image URL & Upload */}
                   <div className="form-group" style={{ margin: 0 }}>
-                    <label className="form-label">Project Cover Image URL</label>
+                    <label className="form-label">Project Cover Image URL / Upload</label>
                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                       <input
                         type="text"
@@ -1341,7 +1341,7 @@ export default function WebsiteCmsView() {
                         placeholder="https://res.cloudinary.com/..."
                       />
                       <button
-                        className="btn btn-secondary btn-sm"
+                        className="btn btn-primary btn-sm"
                         style={{ whiteSpace: 'nowrap' }}
                         onClick={() => handleTriggerUpload(`projectImg_${pIdx}`, 'project', project.title || 'Project Cover Image', 'image')}
                         disabled={uploadingKey === `projectImg_${pIdx}`}
@@ -1352,10 +1352,22 @@ export default function WebsiteCmsView() {
                     </div>
 
                     {project.image && (
-                      <div style={{ marginTop: '0.5rem', width: '140px', height: '80px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #cbd5e1' }}>
+                      <div style={{ marginTop: '0.75rem', width: '100%', maxWidth: '360px', height: '160px', borderRadius: '10px', overflow: 'hidden', border: '2px solid #cbd5e1', background: '#0b132b' }}>
                         <img src={project.image} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
                     )}
+                  </div>
+
+                  {/* Button Text */}
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">CTA Button Text (shown on project card)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={project.buttonText || ''}
+                      onChange={(e) => handleUpdateProject(pIdx, 'buttonText', e.target.value)}
+                      placeholder="For More Info"
+                    />
                   </div>
 
                   {/* Specifications Grid Editor */}
