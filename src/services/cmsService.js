@@ -210,12 +210,66 @@ export async function fetchAllMedia() {
 
 export async function uploadMediaToAPI(mediaPayload) {
   try {
-    const res = await fetch(`${API_BASE_URL}/media/upload`, {
+    // ─── Strategy: Upload directly to Cloudinary via unsigned upload ───
+    // This avoids sending huge base64 payloads through Nginx (which rejects
+    // requests > client_max_body_size with 413, masking as a CORS error).
+    const { key, file, title, category, resourceType, folder } = mediaPayload;
+
+    if (!key || !file) {
+      return { success: false, message: 'Key and file data are required' };
+    }
+
+    const type = resourceType || (typeof file === 'string' && file.startsWith('data:video') ? 'video' : 'image');
+    const targetFolder = folder || (type === 'video' ? 'maytri_ambhuja/videos' : 'maytri_ambhuja/gallery');
+
+    // Convert base64 data URL to a Blob for FormData upload
+    let fileBlob;
+    if (typeof file === 'string' && file.startsWith('data:')) {
+      const resp = await fetch(file);
+      fileBlob = await resp.blob();
+    } else if (file instanceof Blob || file instanceof File) {
+      fileBlob = file;
+    } else {
+      return { success: false, message: 'Invalid file format' };
+    }
+
+    // Upload directly to Cloudinary using unsigned upload
+    const cloudName = 'li8lgd5l';
+    const formData = new FormData();
+    formData.append('file', fileBlob);
+    formData.append('upload_preset', 'maytri_unsigned');
+    formData.append('public_id', key);
+    formData.append('folder', targetFolder);
+
+    const cloudinaryRes = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/${type}/upload`,
+      { method: 'POST', body: formData }
+    );
+
+    if (!cloudinaryRes.ok) {
+      const errData = await cloudinaryRes.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `Cloudinary upload failed (${cloudinaryRes.status})`);
+    }
+
+    const cloudData = await cloudinaryRes.json();
+
+    // Register the uploaded asset in our backend MongoDB (small JSON, no size issue)
+    const registerRes = await fetch(`${API_BASE_URL}/media/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(mediaPayload)
+      body: JSON.stringify({
+        key,
+        title: title || key,
+        category: category || type,
+        cloudinaryUrl: cloudData.secure_url,
+        publicId: cloudData.public_id,
+        format: cloudData.format,
+        resourceType: cloudData.resource_type,
+        bytes: cloudData.bytes,
+      })
     });
-    const result = await res.json();
+
+    const result = await registerRes.json();
     if (broadcastChannel && result.success) {
       broadcastChannel.postMessage({ type: 'MEDIA_UPDATED', media: result.data });
     }
