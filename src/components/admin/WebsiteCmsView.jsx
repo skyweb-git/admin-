@@ -520,7 +520,7 @@ export default function WebsiteCmsView() {
           onClick={() => setActiveSubTab('media')}
         >
           <ImageIcon size={15} />
-          <span>🖼️ Media &amp; Cloud Assets</span>
+          <span>Media &amp; Cloud Assets</span>
         </button>
 
         <button
@@ -528,7 +528,7 @@ export default function WebsiteCmsView() {
           onClick={() => setActiveSubTab('brochure')}
         >
           <FileText size={15} />
-          <span>📄 Brochure PDF Kit</span>
+          <span>Brochure PDF Kit</span>
         </button>
 
         <button
@@ -536,7 +536,7 @@ export default function WebsiteCmsView() {
           onClick={() => setActiveSubTab('amenities')}
         >
           <Sparkles size={15} />
-          <span>🏝️ Resort Amenities</span>
+          <span>Resort Amenities</span>
         </button>
 
         <button
@@ -544,7 +544,7 @@ export default function WebsiteCmsView() {
           onClick={() => setActiveSubTab('projects')}
         >
           <Building2 size={15} />
-          <span>🏰 Our Projects</span>
+          <span>Our Projects</span>
         </button>
 
         <button
@@ -552,7 +552,7 @@ export default function WebsiteCmsView() {
           onClick={() => setActiveSubTab('hero')}
         >
           <Sparkles size={15} />
-          <span>✨ Hero &amp; Headline Copy</span>
+          <span>Hero &amp; Headline Copy</span>
         </button>
 
         <button
@@ -560,7 +560,7 @@ export default function WebsiteCmsView() {
           onClick={() => setActiveSubTab('about')}
         >
           <Building size={15} />
-          <span>🏢 About &amp; Township Stats</span>
+          <span>About &amp; Township Stats</span>
         </button>
 
         <button
@@ -568,7 +568,7 @@ export default function WebsiteCmsView() {
           onClick={() => setActiveSubTab('clubhouse')}
         >
           <Layers size={15} />
-          <span>🏊 Clubhouse Copy</span>
+          <span>Clubhouse Copy</span>
         </button>
 
         <button
@@ -576,7 +576,7 @@ export default function WebsiteCmsView() {
           onClick={() => setActiveSubTab('contact')}
         >
           <Phone size={15} />
-          <span>📞 Contact &amp; Sales Desk</span>
+          <span>Contact &amp; Sales Desk</span>
         </button>
       </div>
 
