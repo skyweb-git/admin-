@@ -264,7 +264,7 @@ export default function WebsiteCmsView() {
         tagline: 'Signature Luxury Community',
         location: 'ORR Exit Hub, Hyderabad',
         status: 'Upcoming Launch',
-        image: 'https://res.cloudinary.com/s8b4ps7b/image/upload/v1788847939/maytri_ambhuja/gallery/gallery_001.jpg',
+        image: 'https://res.cloudinary.com/li8lgd5l/image/upload/v1788847939/maytri_ambhuja/gallery/gallery_001.jpg',
         specs: [
           { label: 'Project Area', value: '30 Acres' },
           { label: 'Villas', value: '200 Units' }

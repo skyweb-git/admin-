@@ -91,7 +91,7 @@ export const DEFAULT_CONTENT = {
         tagline: 'Flagship 55-Acre Villa Township',
         location: 'Sanghi City, Near ORR Exit 11, Hyderabad',
         status: 'Ready for VIP Booking',
-        image: 'https://res.cloudinary.com/s8b4ps7b/image/upload/v1788847939/maytri_ambhuja/gallery/gallery_001.jpg',
+        image: 'https://res.cloudinary.com/li8lgd5l/image/upload/v1788847939/maytri_ambhuja/gallery/gallery_001.jpg',
         specs: [
           { label: 'Project Area', value: '55 Acres' },
           { label: 'Villas', value: '516 Premium Units' },
@@ -107,7 +107,7 @@ export const DEFAULT_CONTENT = {
         tagline: 'Signature Luxury Gated Enclave',
         location: 'Sanghi City Master Township, Hyderabad',
         status: 'Phase 1 Fast Selling',
-        image: 'https://res.cloudinary.com/s8b4ps7b/image/upload/v1788847941/maytri_ambhuja/gallery/gallery_002.jpg',
+        image: 'https://res.cloudinary.com/li8lgd5l/image/upload/v1788847941/maytri_ambhuja/gallery/gallery_002.jpg',
         specs: [
           { label: 'Project Area', value: '35 Acres' },
           { label: 'Villas', value: '280 Luxury Villas' },
@@ -123,7 +123,7 @@ export const DEFAULT_CONTENT = {
         tagline: 'Eco-Luxury Sustainable Villa Estates',
         location: 'Growth Corridor, East Hyderabad',
         status: 'Exclusive Preview',
-        image: 'https://res.cloudinary.com/s8b4ps7b/image/upload/v1788847942/maytri_ambhuja/gallery/gallery_004.jpg',
+        image: 'https://res.cloudinary.com/li8lgd5l/image/upload/v1788847942/maytri_ambhuja/gallery/gallery_004.jpg',
         specs: [
           { label: 'Project Area', value: '40 Acres' },
           { label: 'Villas', value: '320 Eco Villas' },
@@ -139,7 +139,7 @@ export const DEFAULT_CONTENT = {
         tagline: 'Boutique High-End Township Living',
         location: 'ORR Connectivity Hub, Hyderabad',
         status: 'Upcoming Launch',
-        image: 'https://res.cloudinary.com/s8b4ps7b/image/upload/v1788847947/maytri_ambhuja/gallery/gallery_009.jpg',
+        image: 'https://res.cloudinary.com/li8lgd5l/image/upload/v1788847947/maytri_ambhuja/gallery/gallery_009.jpg',
         specs: [
           { label: 'Project Area', value: '20 Acres' },
           { label: 'Residences', value: 'Executive Suites' },
