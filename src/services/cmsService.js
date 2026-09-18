@@ -185,7 +185,8 @@ export async function saveContentToAPI(contentData) {
       broadcastChannel.postMessage({ type: 'CONTENT_UPDATED', content: contentData });
     }
 
-    const res = await fetch(`${API_BASE_URL}/content`, {
+    const baseUrl = getApiBaseUrl();
+    const res = await fetch(`${baseUrl}/content`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(contentData)
@@ -199,7 +200,8 @@ export async function saveContentToAPI(contentData) {
 
 export async function fetchAllMedia() {
   try {
-    const res = await fetch(`${API_BASE_URL}/media`);
+    const baseUrl = getApiBaseUrl();
+    const res = await fetch(`${baseUrl}/media`);
     if (!res.ok) throw new Error('Failed to fetch media');
     return await res.json();
   } catch (err) {
@@ -233,12 +235,15 @@ export async function uploadMediaToAPI(mediaPayload) {
       return { success: false, message: 'Invalid file format' };
     }
 
+    // Generate unique timestamped public ID to guarantee cache-busting on CDN & browser
+    const uniquePublicId = `${key}_${Date.now()}`;
+
     // Upload directly to Cloudinary using unsigned upload
     const cloudName = 'li8lgd5l';
     const formData = new FormData();
     formData.append('file', fileBlob);
     formData.append('upload_preset', 'maytri_unsigned');
-    formData.append('public_id', key);
+    formData.append('public_id', uniquePublicId);
     formData.append('folder', targetFolder);
 
     const cloudinaryRes = await fetch(
@@ -254,7 +259,9 @@ export async function uploadMediaToAPI(mediaPayload) {
     const cloudData = await cloudinaryRes.json();
 
     // Register the uploaded asset in our backend MongoDB (small JSON, no size issue)
-    const registerRes = await fetch(`${API_BASE_URL}/media/register`, {
+    // Key stays canonical (e.g. 'sanghiLogo') so consumers query by standard key
+    const baseUrl = getApiBaseUrl();
+    const registerRes = await fetch(`${baseUrl}/media/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

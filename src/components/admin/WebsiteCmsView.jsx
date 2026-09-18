@@ -163,21 +163,50 @@ export default function WebsiteCmsView() {
         });
 
         if (uploadRes.success) {
-          if (pendingUploadTarget.key === 'brochurePdf' && uploadRes.data?.cloudinaryUrl) {
-            setContent((prev) => ({
-              ...prev,
-              brochure: {
-                ...(prev.brochure || {}),
-                url: uploadRes.data.cloudinaryUrl
-              }
-            }));
-          } else if (pendingUploadTarget.key.startsWith('projectImg_') && uploadRes.data?.cloudinaryUrl) {
+          const uploadedData = uploadRes.data;
+          const uploadedUrl = uploadedData?.cloudinaryUrl;
+
+          // Immediately update mediaList state so the preview re-renders instantly
+          if (uploadedData) {
+            setMediaList((prevList) => {
+              const filtered = prevList.filter((m) => m.key !== uploadedData.key);
+              return [...filtered, uploadedData];
+            });
+          }
+
+          if (pendingUploadTarget.key === 'brochurePdf' && uploadedUrl) {
+            setContent((prev) => {
+              const updated = {
+                ...prev,
+                brochure: {
+                  ...(prev.brochure || {}),
+                  url: uploadedUrl
+                }
+              };
+              saveContentToAPI(updated);
+              return updated;
+            });
+          } else if (pendingUploadTarget.key.startsWith('projectImg_') && uploadedUrl) {
             const pIdx = parseInt(pendingUploadTarget.key.split('_')[1], 10);
             if (!isNaN(pIdx)) {
-              handleUpdateProject(pIdx, 'image', uploadRes.data.cloudinaryUrl);
+              setContent((prev) => {
+                const projects = [...(prev.projectsSection?.items || [])];
+                if (projects[pIdx]) {
+                  projects[pIdx] = { ...projects[pIdx], image: uploadedUrl };
+                }
+                const updated = {
+                  ...prev,
+                  projectsSection: {
+                    ...(prev.projectsSection || {}),
+                    items: projects
+                  }
+                };
+                saveContentToAPI(updated);
+                return updated;
+              });
             }
           }
-          await loadCMSData();
+
           setSaveSuccess(true);
           setTimeout(() => setSaveSuccess(false), 3000);
         } else {
