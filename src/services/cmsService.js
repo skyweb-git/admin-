@@ -150,14 +150,40 @@ export const DEFAULT_CONTENT = {
         buttonText: 'For More Info'
       }
     ]
-  }
+  },
+  theme: {
+    presetName: 'Oceanic Sapphire (Default)',
+    accentColor: '#0284c7',
+    accentGlow: '#38bdf8',
+    accentSubtle: '#e0f2fe',
+    darkPrimary: '#0b132b',
+    darkNavy: '#111c36',
+    darkNavyLight: '#1c2847',
+    pageBg: '#f8f9fb',
+    surfaceBg: '#ffffff',
+    surfaceSubtle: '#f1f3f7',
+    textColor: '#111c36',
+    textMuted: '#52637f',
+    borderColor: '#e2e6ed'
+  },
+  customThemes: []
 };
 
 export function getLocalContent() {
   if (typeof window === 'undefined') return DEFAULT_CONTENT;
   try {
     const raw = localStorage.getItem(CONTENT_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : DEFAULT_CONTENT;
+    if (!raw) return DEFAULT_CONTENT;
+    const parsed = JSON.parse(raw);
+    return {
+      ...DEFAULT_CONTENT,
+      ...parsed,
+      customThemes: Array.isArray(parsed?.customThemes) ? parsed.customThemes : [],
+      theme: {
+        ...DEFAULT_CONTENT.theme,
+        ...(parsed?.theme || {})
+      }
+    };
   } catch (e) {
     return DEFAULT_CONTENT;
   }

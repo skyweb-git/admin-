@@ -39,7 +39,11 @@ import {
   Activity,
   Target,
   PartyPopper,
-  CreditCard
+  CreditCard,
+  Palette,
+  RotateCcw,
+  Check,
+  X
 } from 'lucide-react';
 import { 
   fetchContentFromAPI, 
@@ -56,8 +60,143 @@ const AVAILABLE_ICONS = [
   'Sparkles', 'Heart', 'Car', 'Coffee', 'Sun'
 ];
 
+const THEME_PRESETS = [
+  {
+    id: 'oceanic',
+    name: 'Current Site Default (Blue, Black & White)',
+    badge: 'Live Site Default',
+    previewColors: ['#0284c7', '#0b132b', '#ffffff'],
+    description: 'The authentic live site colors: Sky Blue accent (#0284c7), Midnight Black (#0b132b) & Navy headers (#111c36), and clean White surfaces (#ffffff / #f8f9fb).',
+    theme: {
+      presetName: 'Current Site Default (Blue, Black & White)',
+      accentColor: '#0284c7',
+      accentGlow: '#38bdf8',
+      accentSubtle: '#e0f2fe',
+      darkPrimary: '#0b132b',
+      darkNavy: '#111c36',
+      darkNavyLight: '#1c2847',
+      pageBg: '#f8f9fb',
+      surfaceBg: '#ffffff',
+      surfaceSubtle: '#f1f3f7',
+      textColor: '#111c36',
+      textMuted: '#52637f',
+      borderColor: '#e2e6ed'
+    }
+  },
+  {
+    id: 'emerald',
+    name: 'Luxury Emerald & Forest',
+    badge: 'Botanical Luxury',
+    previewColors: ['#059669', '#061a14', '#ffffff'],
+    description: 'Lush royal emerald accents with forest charcoal headers and mint-tinted cards.',
+    theme: {
+      presetName: 'Luxury Emerald & Forest',
+      accentColor: '#059669',
+      accentGlow: '#34d399',
+      accentSubtle: '#d1fae5',
+      darkPrimary: '#061a14',
+      darkNavy: '#0d281e',
+      darkNavyLight: '#14382a',
+      pageBg: '#f6faf8',
+      surfaceBg: '#ffffff',
+      surfaceSubtle: '#eef7f2',
+      textColor: '#0d281e',
+      textMuted: '#4b6357',
+      borderColor: '#d8e5df'
+    }
+  },
+  {
+    id: 'obsidian_gold',
+    name: 'Royal Obsidian & Gold',
+    badge: 'High-End Prestige',
+    previewColors: ['#d97706', '#0d0f12', '#ffffff'],
+    description: 'Warm champagne gold accents against pitch obsidian black tones and warm silk surfaces.',
+    theme: {
+      presetName: 'Royal Obsidian & Gold',
+      accentColor: '#d97706',
+      accentGlow: '#fbbf24',
+      accentSubtle: '#fef3c7',
+      darkPrimary: '#0d0f12',
+      darkNavy: '#181b20',
+      darkNavyLight: '#262a32',
+      pageBg: '#fbfaf8',
+      surfaceBg: '#ffffff',
+      surfaceSubtle: '#f6f3ed',
+      textColor: '#181b20',
+      textMuted: '#6b6a65',
+      borderColor: '#e8e4db'
+    }
+  },
+  {
+    id: 'minimalist',
+    name: 'Monochrome Onyx',
+    badge: 'Pure Black & White',
+    previewColors: ['#18181b', '#09090b', '#ffffff'],
+    description: 'Pure black & titanium gray accents with clean high-contrast crisp white surfaces.',
+    theme: {
+      presetName: 'Monochrome Onyx',
+      accentColor: '#18181b',
+      accentGlow: '#52525b',
+      accentSubtle: '#f4f4f5',
+      darkPrimary: '#09090b',
+      darkNavy: '#18181b',
+      darkNavyLight: '#27272a',
+      pageBg: '#fafafa',
+      surfaceBg: '#ffffff',
+      surfaceSubtle: '#f4f4f5',
+      textColor: '#09090b',
+      textMuted: '#71717a',
+      borderColor: '#e4e4e7'
+    }
+  },
+  {
+    id: 'indigo_violet',
+    name: 'Deep Violet & Indigo',
+    badge: 'Modern Villa',
+    previewColors: ['#6366f1', '#0c0a1f', '#ffffff'],
+    description: 'Vibrant indigo violet accents with deep space dark headers and pearl surfaces.',
+    theme: {
+      presetName: 'Deep Violet & Indigo',
+      accentColor: '#6366f1',
+      accentGlow: '#818cf8',
+      accentSubtle: '#e0e7ff',
+      darkPrimary: '#0c0a1f',
+      darkNavy: '#161335',
+      darkNavyLight: '#231f4e',
+      pageBg: '#f8f8fc',
+      surfaceBg: '#ffffff',
+      surfaceSubtle: '#f1f0fa',
+      textColor: '#161335',
+      textMuted: '#5b577a',
+      borderColor: '#e2e0f0'
+    }
+  },
+  {
+    id: 'ruby',
+    name: 'Crimson Ruby & Midnight',
+    badge: 'Bold & Premium',
+    previewColors: ['#e11d48', '#16080d', '#ffffff'],
+    description: 'Passionate ruby rose accents with espresso midnight dark tones and soft rose surfaces.',
+    theme: {
+      presetName: 'Crimson Ruby & Midnight',
+      accentColor: '#e11d48',
+      accentGlow: '#fb7185',
+      accentSubtle: '#ffe4e6',
+      darkPrimary: '#16080d',
+      darkNavy: '#250e16',
+      darkNavyLight: '#381622',
+      pageBg: '#fcf8f9',
+      surfaceBg: '#ffffff',
+      surfaceSubtle: '#faedf0',
+      textColor: '#250e16',
+      textMuted: '#704f58',
+      borderColor: '#ebd8dc'
+    }
+  }
+];
+
 export default function WebsiteCmsView() {
-  const [activeSubTab, setActiveSubTab] = useState('media'); // 'media' | 'brochure' | 'hero' | 'about' | 'clubhouse' | 'amenities' | 'contact'
+  const [activeSubTab, setActiveSubTab] = useState('media'); // 'media' | 'theme' | 'brochure' | 'hero' | 'about' | 'clubhouse' | 'amenities' | 'contact'
   const [content, setContent] = useState(DEFAULT_CONTENT);
   const [mediaList, setMediaList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -65,6 +204,19 @@ export default function WebsiteCmsView() {
   const [uploadingKey, setUploadingKey] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  const [customColors, setCustomColors] = useState({
+    accent: '#0284c7',
+    dark: '#0b132b',
+    bg: '#f8f9fb'
+  });
+  const [showCustomModal, setShowCustomModal] = useState(false);
+  const [modalThemeName, setModalThemeName] = useState('My Custom Theme');
+  const [modalColors, setModalColors] = useState({
+    accent: '#0284c7',
+    dark: '#0b132b',
+    bg: '#f8f9fb'
+  });
 
   const fileInputRef = useRef(null);
   const brochureFileInputRef = useRef(null);
@@ -103,8 +255,22 @@ export default function WebsiteCmsView() {
             items: (fetchedContent.projectsSection?.items && fetchedContent.projectsSection.items.length > 0)
               ? fetchedContent.projectsSection.items
               : DEFAULT_CONTENT.projectsSection.items
+          },
+          customThemes: Array.isArray(fetchedContent.customThemes)
+            ? fetchedContent.customThemes
+            : (DEFAULT_CONTENT.customThemes || []),
+          theme: {
+            ...DEFAULT_CONTENT.theme,
+            ...(fetchedContent.theme || {})
           }
         });
+        if (fetchedContent.theme) {
+          setCustomColors({
+            accent: fetchedContent.theme.accentColor || '#0284c7',
+            dark: fetchedContent.theme.darkPrimary || '#0b132b',
+            bg: fetchedContent.theme.pageBg || '#f8f9fb'
+          });
+        }
       }
       if (fetchedMedia && fetchedMedia.data) setMediaList(fetchedMedia.data);
     } catch (err) {
@@ -445,6 +611,160 @@ export default function WebsiteCmsView() {
     });
   };
 
+  const saveThemeDirectly = async (updatedTheme) => {
+    setIsSaving(true);
+    setErrorMsg('');
+    try {
+      const payload = {
+        ...content,
+        theme: updatedTheme
+      };
+      await saveContentToAPI(payload);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      setErrorMsg('Failed to apply theme to live site: ' + err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleApplyThemePreset = (preset) => {
+    const updatedTheme = {
+      ...DEFAULT_CONTENT.theme,
+      ...(content.theme || {}),
+      ...preset.theme
+    };
+    setContent(prev => ({
+      ...prev,
+      theme: updatedTheme
+    }));
+    setCustomColors({
+      accent: preset.theme.accentColor || '#0284c7',
+      dark: preset.theme.darkPrimary || '#0b132b',
+      bg: preset.theme.pageBg || '#f8f9fb'
+    });
+    // Instantly save to MongoDB and broadcast to live website
+    saveThemeDirectly(updatedTheme);
+  };
+
+  const handleOpenCustomModal = () => {
+    const existingCount = (content.customThemes || []).length;
+    setModalThemeName(`Custom Theme ${existingCount + 1}`);
+    setModalColors({
+      accent: content.theme?.accentColor || '#0284c7',
+      dark: content.theme?.darkPrimary || '#0b132b',
+      bg: content.theme?.pageBg || '#f8f9fb'
+    });
+    setShowCustomModal(true);
+  };
+
+  const handleCreateCustomTheme = async () => {
+    const name = modalThemeName.trim() || `Custom Theme ${(content.customThemes || []).length + 1}`;
+    const newCustomPreset = {
+      id: 'custom_' + Date.now(),
+      name: name,
+      badge: 'Custom',
+      isCustom: true,
+      previewColors: [modalColors.accent, modalColors.dark, modalColors.bg],
+      description: `Custom 3-color palette created by admin.`,
+      theme: {
+        presetName: name,
+        accentColor: modalColors.accent,
+        accentGlow: modalColors.accent,
+        accentSubtle: `${modalColors.accent}25`,
+        darkPrimary: modalColors.dark,
+        darkNavy: modalColors.dark,
+        darkNavyLight: modalColors.dark,
+        pageBg: modalColors.bg,
+        surfaceBg: '#ffffff',
+        surfaceSubtle: modalColors.bg,
+        textColor: modalColors.dark,
+        textMuted: '#52637f',
+        borderColor: '#e2e6ed'
+      }
+    };
+
+    const updatedCustomThemes = [...(content.customThemes || []), newCustomPreset];
+
+    setContent(prev => ({
+      ...prev,
+      customThemes: updatedCustomThemes,
+      theme: newCustomPreset.theme
+    }));
+    setCustomColors({
+      accent: modalColors.accent,
+      dark: modalColors.dark,
+      bg: modalColors.bg
+    });
+    setShowCustomModal(false);
+
+    setIsSaving(true);
+    try {
+      const payload = {
+        ...content,
+        customThemes: updatedCustomThemes,
+        theme: newCustomPreset.theme
+      };
+      await saveContentToAPI(payload);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      setErrorMsg('Failed to create custom theme: ' + err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteCustomTheme = async (themeId, e) => {
+    if (e) e.stopPropagation();
+    const currentCustoms = content.customThemes || [];
+    const targetItem = currentCustoms.find(t => t.id === themeId);
+    const updatedCustomThemes = currentCustoms.filter(t => t.id !== themeId);
+    
+    // If currently active theme is this deleted one, fall back to Default Preset
+    let updatedTheme = content.theme;
+    if (targetItem && content.theme?.presetName === targetItem.name) {
+      updatedTheme = THEME_PRESETS[0].theme;
+    }
+
+    setContent(prev => ({
+      ...prev,
+      customThemes: updatedCustomThemes,
+      theme: updatedTheme
+    }));
+
+    setIsSaving(true);
+    try {
+      const payload = {
+        ...content,
+        customThemes: updatedCustomThemes,
+        theme: updatedTheme
+      };
+      await saveContentToAPI(payload);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      setErrorMsg('Failed to delete custom theme: ' + err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleResetThemeToDefault = () => {
+    const defaultTheme = { ...DEFAULT_CONTENT.theme };
+    setContent(prev => ({
+      ...prev,
+      theme: defaultTheme
+    }));
+    setCustomColors({
+      accent: defaultTheme.accentColor,
+      dark: defaultTheme.darkPrimary,
+      bg: defaultTheme.pageBg
+    });
+    saveThemeDirectly(defaultTheme);
+  };
+
   const getMediaUrl = (key, fallback = '') => {
     const item = mediaList.find((m) => m.key === key);
     return item?.cloudinaryUrl || fallback;
@@ -543,13 +863,35 @@ export default function WebsiteCmsView() {
       </div>
 
       {/* Sub Tabs Navigation */}
-      <div className="nav-tabs" style={{ alignSelf: 'flex-start' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', margin: '0 auto' }}>
+        <div 
+          className="nav-tabs" 
+          style={{ 
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            overflow: 'visible',
+            overflowX: 'visible',
+            maxWidth: '100%',
+            gap: '0.35rem',
+            padding: '0.35rem 0.6rem'
+          }}
+        >
         <button
           className={`nav-tab-btn ${activeSubTab === 'media' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('media')}
         >
           <ImageIcon size={15} />
           <span>Media &amp; Cloud Assets</span>
+        </button>
+
+        <button
+          className={`nav-tab-btn ${activeSubTab === 'theme' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('theme')}
+        >
+          <Palette size={15} />
+          <span>Theme &amp; Colors</span>
         </button>
 
         <button
@@ -561,19 +903,19 @@ export default function WebsiteCmsView() {
         </button>
 
         <button
-          className={`nav-tab-btn ${activeSubTab === 'amenities' ? 'active' : ''}`}
-          onClick={() => setActiveSubTab('amenities')}
-        >
-          <Sparkles size={15} />
-          <span>Resort Amenities</span>
-        </button>
-
-        <button
           className={`nav-tab-btn ${activeSubTab === 'projects' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('projects')}
         >
           <Building2 size={15} />
           <span>Our Projects</span>
+        </button>
+
+        <button
+          className={`nav-tab-btn ${activeSubTab === 'amenities' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('amenities')}
+        >
+          <Sparkles size={15} />
+          <span>Resort Amenities</span>
         </button>
 
         <button
@@ -608,6 +950,7 @@ export default function WebsiteCmsView() {
           <span>Contact &amp; Sales Desk</span>
         </button>
       </div>
+    </div>
 
       {/* TAB 1: MEDIA ASSETS STUDIO */}
       {activeSubTab === 'media' && (
@@ -1485,6 +1828,459 @@ export default function WebsiteCmsView() {
               ))}
             </div>
           </div>
+        </div>
+      )}
+
+{/* TAB: THEME & COLOR PALETTE STUDIO */}
+      {activeSubTab === 'theme' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* Header Banner & Reset */}
+          <div className="table-card" style={{ padding: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <Palette size={22} className="text-cyan-600" />
+                  <span>Website Theme &amp; Color Palette Studio</span>
+                </h3>
+                <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px', maxWidth: '780px', lineHeight: 1.5 }}>
+                  Instantly customize the site colors — including the <strong>Blue accent</strong>, <strong>Black/Navy dark elements</strong>, and <strong>White backgrounds/surfaces</strong>. Select a curated luxury preset or fine-tune individual colors with the live preview below.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={handleResetThemeToDefault}
+                  title="Restore default brand color palette"
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  <RotateCcw size={14} />
+                  <span>Reset to Brand Defaults</span>
+                </button>
+
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={() => saveThemeDirectly(content.theme)}
+                  disabled={isSaving}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                  <span>{isSaving ? 'Publishing Colors...' : 'Save & Apply to Live Site'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+
+
+          {/* Curated Presets */}
+          <div className="table-card" style={{ padding: '1.5rem' }}>
+            <div style={{ marginBottom: '1.25rem' }}>
+              <h4 style={{ fontSize: '0.98rem', fontWeight: 800, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Sparkles size={16} className="text-amber-500" />
+                <span>1-Click Curated Luxury Presets</span>
+              </h4>
+              <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px' }}>
+                Select a professionally matched designer palette to immediately transform the look of the entire website.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+              {THEME_PRESETS.map((preset) => {
+                const isCurrentActive = 
+                  content.theme?.accentColor === preset.theme.accentColor &&
+                  content.theme?.darkPrimary === preset.theme.darkPrimary &&
+                  content.theme?.pageBg === preset.theme.pageBg;
+
+                return (
+                  <div
+                    key={preset.id}
+                    onClick={() => handleApplyThemePreset(preset)}
+                    style={{
+                      border: isCurrentActive ? '2px solid #0284c7' : '1.5px solid #e2e8f0',
+                      borderRadius: '12px',
+                      padding: '1.1rem',
+                      background: isCurrentActive ? '#f0f9ff' : '#ffffff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: isCurrentActive ? '0 4px 14px rgba(2, 132, 199, 0.12)' : '0 1px 4px rgba(0,0,0,0.03)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.75rem'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: 800, fontSize: '0.92rem', color: '#0f172a' }}>{preset.name}</span>
+                      <span style={{ 
+                        fontSize: '0.7rem', 
+                        fontWeight: 700, 
+                        padding: '3px 8px', 
+                        borderRadius: '999px',
+                        background: isCurrentActive ? '#0284c7' : '#e2e8f0',
+                        color: isCurrentActive ? '#ffffff' : '#475569'
+                      }}>
+                        {isCurrentActive ? 'Active' : preset.badge}
+                      </span>
+                    </div>
+
+                    {/* Color Swatch Bar */}
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      {preset.previewColors.map((hex, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            background: hex,
+                            border: '2px solid #cbd5e1',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                          }}
+                          title={hex}
+                        />
+                      ))}
+                      <span style={{ fontSize: '0.74rem', color: '#64748b', marginLeft: '6px' }}>
+                        Accent • Dark • Light
+                      </span>
+                    </div>
+
+                    <p style={{ fontSize: '0.78rem', color: '#64748b', lineHeight: 1.4, margin: 0 }}>
+                      {preset.description}
+                    </p>
+
+                    <button
+                      className={`btn btn-sm ${isCurrentActive ? 'btn-primary' : 'btn-secondary'}`}
+                      style={{ marginTop: 'auto', width: '100%', justifyContent: 'center' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleApplyThemePreset(preset);
+                      }}
+                    >
+                      {isCurrentActive ? <Check size={14} /> : <Palette size={14} />}
+                      <span>{isCurrentActive ? 'Currently Selected' : 'Apply Preset'}</span>
+                    </button>
+                  </div>
+                );
+              })}
+
+              {/* 2. Admin Created Custom Themes (WITH DELETE BUTTON) */}
+              {(content.customThemes || []).map((customPreset) => {
+                const isCurrentActive = 
+                  content.theme?.accentColor === customPreset.theme?.accentColor &&
+                  content.theme?.darkPrimary === customPreset.theme?.darkPrimary &&
+                  content.theme?.pageBg === customPreset.theme?.pageBg;
+
+                return (
+                  <div
+                    key={customPreset.id}
+                    onClick={() => handleApplyThemePreset(customPreset)}
+                    style={{
+                      border: isCurrentActive ? '2px solid #0284c7' : '1.5px solid #e2e8f0',
+                      borderRadius: '12px',
+                      padding: '1.1rem',
+                      background: isCurrentActive ? '#f0f9ff' : '#ffffff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: isCurrentActive ? '0 4px 14px rgba(2, 132, 199, 0.12)' : '0 1px 4px rgba(0,0,0,0.03)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.75rem'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: 800, fontSize: '0.92rem', color: '#0f172a' }}>
+                        {customPreset.name}
+                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ 
+                          fontSize: '0.7rem', 
+                          fontWeight: 700, 
+                          padding: '3px 8px', 
+                          borderRadius: '999px',
+                          background: isCurrentActive ? '#0284c7' : '#e0f2fe',
+                          color: isCurrentActive ? '#ffffff' : '#0284c7'
+                        }}>
+                          {isCurrentActive ? 'Active' : 'Custom'}
+                        </span>
+                        {/* DELETE BUTTON ON THE NEWLY CREATED CUSTOM CARD */}
+                        <button
+                          type="button"
+                          onClick={(e) => handleDeleteCustomTheme(customPreset.id, e)}
+                          style={{
+                            background: '#fee2e2',
+                            color: '#ef4444',
+                            border: '1px solid #fecaca',
+                            borderRadius: '6px',
+                            padding: '3px 6px',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s'
+                          }}
+                          title="Delete this custom theme"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Color Swatch Bar */}
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      {(customPreset.previewColors || [customPreset.theme?.accentColor, customPreset.theme?.darkPrimary, customPreset.theme?.pageBg]).map((hex, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            background: hex,
+                            border: '2px solid #cbd5e1',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                          }}
+                          title={hex}
+                        />
+                      ))}
+                      <span style={{ fontSize: '0.74rem', color: '#64748b', marginLeft: '6px' }}>
+                        Accent • Dark • Light
+                      </span>
+                    </div>
+
+                    <p style={{ fontSize: '0.78rem', color: '#64748b', lineHeight: 1.4, margin: 0 }}>
+                      {customPreset.description || 'Custom 3-color palette created by admin.'}
+                    </p>
+
+                    <button
+                      className={`btn btn-sm ${isCurrentActive ? 'btn-primary' : 'btn-secondary'}`}
+                      style={{ marginTop: 'auto', width: '100%', justifyContent: 'center' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleApplyThemePreset(customPreset);
+                      }}
+                    >
+                      {isCurrentActive ? <Check size={14} /> : <Palette size={14} />}
+                      <span>{isCurrentActive ? 'Currently Selected' : 'Apply Preset'}</span>
+                    </button>
+                  </div>
+                );
+              })}
+
+              {/* 3. "Custom" Trigger Card (Click to open 3-color selection panel) */}
+              <div
+                onClick={handleOpenCustomModal}
+                style={{
+                  border: '2px dashed #0284c7',
+                  borderRadius: '12px',
+                  padding: '1.1rem',
+                  background: '#f8fafc',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textAlign: 'center',
+                  minHeight: '190px'
+                }}
+              >
+                <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Plus size={22} />
+                </div>
+                <div>
+                  <h4 style={{ margin: '0 0 4px 0', fontSize: '0.96rem', fontWeight: 800, color: '#0f172a' }}>
+                    Custom
+                  </h4>
+                  <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0, maxWidth: '220px' }}>
+                    Click here to choose 3 colors and create your own palette panel.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ pointerEvents: 'none', borderColor: '#0284c7', color: '#0284c7', fontWeight: 700 }}
+                >
+                  <Plus size={14} />
+                  <span>Choose 3 Colors</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* CUSTOM 3-COLOR THEME CREATION MODAL / PANEL */}
+          {showCustomModal && (
+            <div 
+              style={{
+                position: 'fixed',
+                inset: 0,
+                background: 'rgba(15, 23, 42, 0.65)',
+                backdropFilter: 'blur(4px)',
+                zIndex: 9999,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '1rem'
+              }}
+              onClick={() => setShowCustomModal(false)}
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  background: '#ffffff',
+                  borderRadius: '16px',
+                  maxWidth: '520px',
+                  width: '100%',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+              >
+                {/* Modal Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0', background: '#f8fafc' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Palette size={18} className="text-cyan-600" />
+                      <span>Create Custom 3-Color Theme</span>
+                    </h3>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                      Pick 3 colors to generate a new theme panel with delete controls.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowCustomModal(false)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', padding: '4px' }}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Modal Body */}
+                <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  {/* Theme Name */}
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label" style={{ fontWeight: 700, fontSize: '0.85rem' }}>Theme Palette Name</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={modalThemeName}
+                      onChange={(e) => setModalThemeName(e.target.value)}
+                      placeholder="e.g. Royal Sunset, Modern Luxury"
+                    />
+                  </div>
+
+                  {/* 3 Colors Inputs */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+                    {/* Color 1: Accent */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                      <div>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>1. Accent Color</span>
+                        <p style={{ fontSize: '0.75rem', color: '#64748b', margin: 0 }}>CTA buttons, badges, glowing highlights</p>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <input
+                          type="color"
+                          value={modalColors.accent}
+                          onChange={(e) => setModalColors(prev => ({ ...prev, accent: e.target.value }))}
+                          style={{ width: '40px', height: '36px', border: '1.5px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer', padding: '2px', background: 'transparent' }}
+                        />
+                        <input
+                          type="text"
+                          value={modalColors.accent}
+                          onChange={(e) => setModalColors(prev => ({ ...prev, accent: e.target.value }))}
+                          style={{ width: '85px', fontFamily: 'monospace', fontWeight: 700, fontSize: '0.85rem' }}
+                          className="form-input"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Color 2: Dark Elements */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                      <div>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>2. Midnight / Dark Elements</span>
+                        <p style={{ fontSize: '0.75rem', color: '#64748b', margin: 0 }}>Navbar header, dark cards, footer</p>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <input
+                          type="color"
+                          value={modalColors.dark}
+                          onChange={(e) => setModalColors(prev => ({ ...prev, dark: e.target.value }))}
+                          style={{ width: '40px', height: '36px', border: '1.5px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer', padding: '2px', background: 'transparent' }}
+                        />
+                        <input
+                          type="text"
+                          value={modalColors.dark}
+                          onChange={(e) => setModalColors(prev => ({ ...prev, dark: e.target.value }))}
+                          style={{ width: '85px', fontFamily: 'monospace', fontWeight: 700, fontSize: '0.85rem' }}
+                          className="form-input"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Color 3: Background / Light */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                      <div>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>3. Page Background / Light</span>
+                        <p style={{ fontSize: '0.75rem', color: '#64748b', margin: 0 }}>Page body canvas &amp; surface backgrounds</p>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <input
+                          type="color"
+                          value={modalColors.bg}
+                          onChange={(e) => setModalColors(prev => ({ ...prev, bg: e.target.value }))}
+                          style={{ width: '40px', height: '36px', border: '1.5px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer', padding: '2px', background: 'transparent' }}
+                        />
+                        <input
+                          type="text"
+                          value={modalColors.bg}
+                          onChange={(e) => setModalColors(prev => ({ ...prev, bg: e.target.value }))}
+                          style={{ width: '85px', fontFamily: 'monospace', fontWeight: 700, fontSize: '0.85rem' }}
+                          className="form-input"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Palette Preview Bar */}
+                  <div style={{ padding: '0.75rem 1rem', background: modalColors.bg, border: '1px solid #cbd5e1', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 700, color: modalColors.dark }}>
+                      Preview:
+                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ background: modalColors.dark, color: '#fff', padding: '3px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>
+                        Navbar
+                      </span>
+                      <span style={{ background: modalColors.accent, color: '#fff', padding: '3px 10px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>
+                        Button
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal Footer */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '0.75rem', padding: '1rem 1.5rem', borderTop: '1px solid #e2e8f0', background: '#f8fafc' }}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowCustomModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleCreateCustomTheme}
+                    disabled={isSaving}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                  >
+                    {isSaving ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
+                    <span>Create &amp; Apply Theme</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
